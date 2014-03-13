@@ -5,14 +5,19 @@ console.log("loaded popup.js");
 //make request for content
 getLocations();
 
-// listen for on click for display map and clear locations
-$("#display_map").on("click", (function() {
-    displayLocations();
-}));
 
-$("#clear_locations").on("click", (function() {
-    clearLocations();
-}));
+function setOnClickListeners() {
+    // listen for on click for display map and clear locations
+    $("#display_map").on("click", (function() {
+        displayLocations();
+    }));
+
+    $("#clear_locations").on("click", (function() {
+        clearLocations();
+    }));
+}
+
+setOnClickListeners();
 
 //clears all locations via sending clear message to background and 
 //receiving a new list (which should be empty) and displaying it.
@@ -44,15 +49,34 @@ function removeLocation(location) {
 
 //updates the list of locations in the popup
 function refreshLocations(locations) {
-    console.log(locations);
-    html = "<table>"
-    for (ll in locations) {
-        console.log(ll)
-        html += "<tr><td class='locTD'>" + ll + "</td><td ><span class='deleteLoc'></span></td></tr>";
+    locList = $("#locationTable");
+    locList[0].innerHTML = "";
+    
+    var contentString ="<thead><tr><th>Location</th><th>Remove"+
+    "</th></tr></thead><tbody id='tbody'"
+    locList.append(contentString);
+
+    for (loc in locations) {
+        console.log("asdasd")
+        var newString =  
+            '<tr>' +
+            '<td>' + loc + '</td>' +
+            "</td><td ><span class='deleteLoc' id='" + loc + "'>X</span></td></tr>" +
+            '</tr>'
+
+        locList.append(newString);
     }
-    html += "</table>";
-    console.log(html);
-    $("#locationList")[0].innerHTML = html;
+    locList.append("</tbody>");
+
+    locList.tablecloth({
+        theme: "default",
+        bordered: true,
+        condensed: true,
+        striped: true,
+        sortable: true,
+        clean: true,
+        cleanElements: "th td",
+    });
 }
 
 //pulls current list of locations from background

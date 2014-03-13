@@ -125,11 +125,23 @@ function getLocationData() {
 }
 
 // TODOs: Limit map boundaries, implement click on item
-// in table to zoom to marker on map
-
+// in table to zoom to marker on map, get clustering, display labels by default,
+// get more information about the labels, get distances from points
+// maybe have a country info column if can get data.
+// implement sharing, maybe just export a list of places and have people import it
+// Maybe have a load-2+-pts-to-GMaps
 
 // TODO: implement method to remove locations onClick
 function removeLocation(){};
+
+function onRowClick(){};
+// moves to position on map, maybe changes the color, 
+// maybe pops up more info, maybe calc distances btwn 
+// every location and the selected one 
+
+//MAYBE add location?
+//MAYBE sets of locations?
+
 
 function displayLocations(locationData) {
     //expecting a json object with structure:

@@ -9,6 +9,10 @@ html, body, .row, .col-xs-9 {
  	height:100%;
 }
 
+#tableCol {
+
+}
+
 #headerRow {
 	width:100%;
  	height:10%;
