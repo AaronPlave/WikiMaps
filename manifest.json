@@ -1,0 +1,37 @@
+{
+    "name": "Map Select",
+    "version": "0.1",
+    "description": "Select locations on a page and display them on a map",
+    "icons": {
+        "128": "img/icon.png"
+    },
+    "commands": {
+        "add_selection": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+Z",
+                "mac": "Command+Shift+Z"
+            },
+            "description": "Add selection to Map Select"
+        }
+    },
+    "background": {
+        "page": "html/background.html"
+    },
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["js/jquery.js", "js/mapSelect_content_script.js"]
+    }],
+    "permissions": [
+        "tabs",
+        "contextMenus",
+        "https://maps.google.com/*",
+        "https://maps.googleapis.com/*"
+    ],
+    "browser_action": {
+        "default_name": "Display Map",
+        "default_icon": "img/marker.png",
+        "default_popup": "html/popup.html"
+    },
+    "manifest_version": 2,
+    "content_security_policy": "default-src 'none'; font-src https://*.googleusercontent.com/; style-src 'self' 'unsafe-inline' https://*.googleapis.com/; script-src 'self' 'unsafe-eval' https://maps.gstatic.com/ https://*.googleapis.com/; connect-src 'self' https://maps.googleapis.com/ https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false; img-src https://maps.google.com https://*.googleapis.com/ https://*.gstatic.com/"
+}

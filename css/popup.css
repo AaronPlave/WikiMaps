@@ -1,0 +1,37 @@
+/**
+ * Copyright (c) 2011 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+  margin: 0px;
+  padding: 0px 10px 10px 10px;
+  width: 185px;
+  height: 400px;
+}
+
+.mainPopup {
+	padding: 10px;
+}
+
+.display_map {
+	display: inline-block;
+}
+
+#locationList {
+	padding: 0px;
+}
+
+.clear_list {
+	display: inline-block;
+}
+
+#locTD {
+	/*float: right;*/
+}
+
+#deleteLoc {
+	display: inline-block;
+	background-color: black;
+}

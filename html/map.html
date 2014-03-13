@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <script src="../js/map.js"></script>
+    <script src="../js/jquery.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.tablecloth.js"></script>
+    <script src="../js/jquery.tablesorter.js"></script>
+    <script src="../js/jquery.metadata.js"></script>
+    <link href="../css/bootstrap-tables.css" rel="stylesheet" type="text/css">
+    <link href="../css/bootstrap-theme.css" rel="stylesheet" type="text/css">
+    <link href="../css/bootstrap-theme.css.map" rel="stylesheet" type="text/css">
+    <link href="../css/prettify.css" rel="stylesheet" type="text/css">
+    <link href="../css/tablecloth.css" rel="stylesheet" type="text/css">
+    <link href="../css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="../css/map.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="row" id="headerRow">
+      <div id="titleDiv">
+        <h2 id="title"> Map Select</h2>
+      </div>
+    </div>
+
+    <div class="row">
+
+    <div class="col-xs-3">
+      <h3> Locations</h3>
+      <table id="locationTable">
+      <thead>
+        <tr>
+          <th>Location</th>
+          <th>Coordinates</th>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+      </table>
+    </div>
+
+      <div class="col-xs-9">
+
+        <div class="google-map-canvas" id="map-canvas">
+        </div>
+
+        
+      </div>
+
+</div>
+  </body>
+</html>
