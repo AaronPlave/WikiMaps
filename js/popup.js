@@ -6,7 +6,7 @@ console.log("loaded popup.js");
 getLocations();
 
 
-function setOnClickListeners() {
+function setOnClickListeners(locations) {
     // listen for on click for display map and clear locations
     $("#display_map").on("click", (function() {
         displayLocations();
@@ -15,9 +15,18 @@ function setOnClickListeners() {
     $("#clear_locations").on("click", (function() {
         clearLocations();
     }));
-}
 
-setOnClickListeners();
+    locationElements = $(".deleteLoc");
+    // console.log(locationElements)
+
+    locationElements.on('click', function() {
+        console.log("click")
+        if (this.id in locations) {
+            console.log(this.id)
+            removeLocation(this.id);
+        }
+    })
+}
 
 //clears all locations via sending clear message to background and 
 //receiving a new list (which should be empty) and displaying it.
@@ -33,7 +42,6 @@ function clearLocations() {
     )
 }
 
-
 //removes a location from the list and sends a message to the background to remove from real list
 function removeLocation(location) {
     chrome.runtime.sendMessage({
@@ -42,7 +50,8 @@ function removeLocation(location) {
         },
         //callback to refresh locations, background will pass back new list
         function(responseLocations) {
-            refreshLocations(responseLocations);
+            console.log(responseLocations)
+            refreshLocations(responseLocations.updatedLocations);
         }
     )
 }
@@ -51,17 +60,16 @@ function removeLocation(location) {
 function refreshLocations(locations) {
     locList = $("#locationTable");
     locList[0].innerHTML = "";
-    
-    var contentString ="<thead><tr><th>Location</th><th>Remove"+
-    "</th></tr></thead><tbody id='tbody'"
+
+    var contentString = "<thead><tr><th>Location</th><th>Remove" +
+        "</th></tr></thead><tbody id='tbody'"
     locList.append(contentString);
 
     for (loc in locations) {
-        console.log("asdasd")
-        var newString =  
+        var newString =
             '<tr>' +
             '<td>' + loc + '</td>' +
-            "</td><td ><span class='deleteLoc' id='" + loc + "'>X</span></td></tr>" +
+            "</td><td ><div class='deleteLoc' id='" + loc + "'>X</div></td></tr>" +
             '</tr>'
 
         locList.append(newString);
@@ -77,6 +85,7 @@ function refreshLocations(locations) {
         clean: true,
         cleanElements: "th td",
     });
+    setOnClickListeners(locations);
 }
 
 //pulls current list of locations from background
