@@ -69,7 +69,7 @@ function refreshLocations(locations) {
         var newString =
             '<tr>' +
             '<td>' + loc + '</td>' +
-            "</td><td ><div class='deleteLoc' id='" + loc + "'>X</div></td></tr>" +
+            "</td><td class='removeButton'><button class='deleteLoc' id='" + loc + "'>X</button></td></tr>" +
             '</tr>'
 
         locList.append(newString);

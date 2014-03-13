@@ -7,16 +7,50 @@
 body {
   margin: 0px;
   padding: 0px 10px 10px 10px;
-  width: 185px;
+  width: 220px;
   height: 400px;
+  text-align: center;
 }
 
 .mainPopup {
 	padding: 10px;
+	/*text-align: center !important;*/
 }
 
-.display_map {
+#display_map {
 	display: inline-block;
+	border-top-left-radius: 40px;
+	border-bottom-right-radius: 40px;
+	border-color: white;
+	color: rgb(77, 77, 85);
+	background-color: rgba(70, 188, 236, 0.5);
+	padding-left: 14px;
+	padding-right: 14px;
+	border-style: dotted;
+}
+
+#display_map:hover {
+    background-color: rgba(70, 188, 236, 0.7);
+}
+
+#clear_locations {
+	display: inline-block;
+	border-top-right-radius: 40px;
+	border-bottom-left-radius: 40px;
+	border-color: white;
+	color: rgb(77, 77, 85);
+	background-color: rgba(221, 87, 97, 0.4);
+	padding-left: 14px;
+	padding-right: 14px;
+	border-style: dotted;
+}
+
+#clear_locations:hover {
+    background-color: rgba(221, 87, 97, 0.6);;
+}
+
+#buttonDiv {
+	padding-bottom: 12px;
 }
 
 #locationList {
@@ -34,4 +68,9 @@ body {
 #deleteLoc {
 	display: inline-block;
 	background-color: black;
+}
+
+.removeButton {
+	text-align: center !important;
+	/*padding: 10% !important;*/
 }
