@@ -57,7 +57,6 @@ function updateLocation(location, coords) {
         };
         console.log(coords);
 
-
         //async get data but don't wait around for this to happen,
         // just push another locations update on return of getWiki.
         getWiki(location, function() {
@@ -125,9 +124,9 @@ function geolocate(address, callback) {
 function getLocationData() {
     console.log("preparing data for all locations");
     console.log(locations);
-    locationData = JSON.stringify(locations);
+    // locationData = JSON.stringify(locations);
     //might have to do more here in the future.
-    return locationData
+    return locations
 }
 
 
@@ -137,7 +136,7 @@ function getWikiImage(loc, title,callback) {
     // Question: do this immediately or only when the user selects "read more"
     // on the map page.
 
-    var wikiImageQueryBase = "http://en.wikipedia.org/w/api.php?action=query&titles=QUERY_STRING&prop=pageimages&format=json&pithumbsize=500"
+    var wikiImageQueryBase = "http://en.wikipedia.org/w/api.php?action=query&titles=QUERY_STRING&prop=pageimages&format=json&pithumbsize=400"
     wikiImageQueryBase = wikiImageQueryBase.replace("QUERY_STRING", loc);
 
 
@@ -275,7 +274,7 @@ function onRequest(request, sender, sendResponse) {
         console.log(locationCoordinates);
         console.log("asdsad")
         sendResponse({
-            locationData: locationData
+            locationData: locations
         })
     } else if (request.action == "clear_locations") {
         console.log("clearing locations")

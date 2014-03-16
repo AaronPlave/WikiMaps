@@ -107,6 +107,41 @@ function initialize() {
     };
     map = new google.maps.Map(document.getElementById("map-canvas"),
         mapOptions);
+
+
+
+    // google.maps.event.addListener(map, 'bounds_changed', function() {
+    //     google.maps.event.addListener(map, 'center_changed', function() {
+    //         var sw = new google.maps.LatLng(0.00, 90.00);
+    //         var ne = new google.maps.LatLng(0.00, 0.00);
+    //         var allowedBounds = new google.maps.LatLngBounds(sw, ne);
+    //         if (!allowedBounds.contains(map.getCenter())) {
+    //             var C = map.getCenter();
+    //             var X = C.lng();
+    //             var Y = C.lat();
+
+    //             var AmaxX = allowedBounds.getNorthEast().lng();
+    //             var AmaxY = allowedBounds.getNorthEast().lat();
+    //             var AminX = allowedBounds.getSouthWest().lng();
+    //             var AminY = allowedBounds.getSouthWest().lat();
+
+    //             if (X < AminX) {
+    //                 X = AminX;
+    //             }
+    //             if (X > AmaxX) {
+    //                 X = AmaxX;
+    //             }
+    //             if (Y < AminY) {
+    //                 Y = AminY;
+    //             }
+    //             if (Y > AmaxY) {
+    //                 Y = AmaxY;
+    //             }
+
+    //             map.setCenter(new google.maps.LatLng(Y, X));
+    //         }
+    //     });
+    // });
     // google.maps.event.addListener(map, 'center_changed', function() {
     //     checkBounds();
     // });
@@ -207,12 +242,57 @@ function onRowClick(loc) {
 //MAYBE sets of locations?
 
 
+function removeMarker(marker) {
+    console.log(markers)
+    console.log("del markers");
+    markers[marker].setMap(null);
+    delete markers[marker]
+}
+
+function clearMarkers() {
+    for (m in markers) {
+        removeMarker(m)
+    }
+    markers = {};
+}
+
+
+function clearTable() {
+    $("#locTbody")[0].innerHTML = "";
+}
+
+function removeTableLocation(location) {
+    // remove all elements in table not in locationData
+    l = $("#" + location)
+    if (l) {
+        l.parent().remove();
+    }
+}
+
+
+function removeLocation(location) {
+    removeTableLocation(location);
+    removeMarker(location);
+}
+
+function clearLocations() {
+    clearMarkers();
+    clearTable();
+}
+
 function displayLocations(locationData) {
     //expecting a json object with structure:
-    //{locations:[{location:{x:float,y:float},...]}
-    obj = JSON.parse(locationData);
-    addMarkersToMap(obj);
-    addLocationsToTable(obj);
+
+    //filter out any duplicate locations
+    console.log(locationData, "HII")
+    for (loc in locationData) {
+        if (loc in markers) {
+            delete locationData[loc];
+        }
+    }
+    console.log(locationData, "H2")
+    addMarkersToMap(locationData);
+    addLocationsToTable(locationData);
 }
 
 var markers = {};
@@ -223,25 +303,23 @@ function addMarkersToMap(locations) {
 
     //TODO: implement data checking to ensure that things are
     // properly formatted/exist for each obj tried
-
+    console.log("add", markers)
     for (loc in locations) {
         console.log(locations[loc]);
         //TODO: Add clustering of markers
-        //TODO!! Could pull some wikipedia or google data 
-        //for each location on the map. For now just display and label
-        var contentString = '<div id="content">' + loc +
-            '</div>'+'<img src="'+locations[loc].imageUrl+'">'+
-            '<div id="locDescription"'+locations[loc].extract+'"/>';
+        var contentString = '<div class="infoWindowDiv"><div id="content">' + loc +
+            '</div>' + '<img src="' + locations[loc].imageUrl + '">' +
+            '<div id="locDescription"' + locations[loc].extract + '<div/></div>';
         var infowindow = new google.maps.InfoWindow({
-            content: contentString
+            content: contentString,
+            maxWidth: 700,
         });
         var coords = new google.maps.LatLng(locations[loc].x, locations[loc].y);
         var marker = new google.maps.Marker({
             position: coords,
             map: map,
-            title: loc,
+            title: loc
         });
-        //TODO: set initial zoom
         google.maps.event.addListener(marker, 'click',
             function(infowindow, marker) {
                 return function() {
@@ -257,10 +335,11 @@ function addMarkersToMap(locations) {
 }
 
 function addLocationsToTable(locations) {
+    console.log("LOCTABLE", locations)
     locList = $("#locationTable");
     for (loc in locations) {
         var contentString =
-            '<tr>' +
+            '<tr id="locTr">' +
             '<td class="rowLocation" id="' + loc + '"">' + loc + '</td>' +
             '<td>' + locations[loc].x + ' ' + locations[loc].y + '</td>' +
             '</tr>'
@@ -282,3 +361,19 @@ function addLocationsToTable(locations) {
 
 //get data and display
 getLocationData();
+
+//Listener for new location data
+function onRequest(request, sender, sendResponse) {
+    console.log(request, sender.tab, request.action);
+    if (request.action == "update_locations") {
+        console.log("UPDATING MAP")
+        displayLocations(request.updatedLocations);
+    } else if (request.action == "remove_location") {
+        console.log("remove", request.removeLocation)
+        removeLocation(request.removeLocation);
+    } else if (request.action == "clear_locations") {
+        clearLocations();
+    }
+}
+
+chrome.runtime.onMessage.addListener(onRequest);
