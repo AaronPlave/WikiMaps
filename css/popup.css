@@ -7,9 +7,10 @@
 body {
   margin: 0px;
   padding: 0px 10px 10px 10px;
-  width: 220px;
+  width: 260px;
   height: 400px;
   text-align: center;
+  font-family:  monospace;
 }
 
 .mainPopup {
@@ -65,12 +66,23 @@ body {
 	/*float: right;*/
 }
 
-#deleteLoc {
+.deleteLoc {
 	display: inline-block;
-	background-color: black;
+	font-family: inherit;
+	font-size: inherit;
+	border-radius: 50px;
+	color: rgba(255, 0, 0, 0.71);
+	line-height: inherit;
+	background: rgba(0, 0, 255, 0);
+}
+
+.deleteLoc:hover {
+	background: rgba(255, 0, 0, 0.71);
+	color: white;
 }
 
 .removeButton {
 	text-align: center !important;
+	width: 20%;
 	/*padding: 10% !important;*/
 }

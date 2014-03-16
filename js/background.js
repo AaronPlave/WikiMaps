@@ -56,6 +56,17 @@ function updateLocation(location, coords) {
             y: coords.A
         };
         console.log(coords);
+
+
+        //async get data but don't wait around for this to happen,
+        // just push another locations update on return of getWiki.
+        getWiki(location, function() {
+            chrome.runtime.sendMessage({
+                action: 'update_locations',
+                updatedLocations: locations
+            })
+        })
+
         //push locations out to whoever is listening-- i.e. 
         //content script and popup
         chrome.runtime.sendMessage({
@@ -101,7 +112,7 @@ function geolocate(address, callback) {
         'address': address
     }, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
-            console.log(results[0]);
+            console.log(results);
             coords = results[0].geometry.location;
             console.log("HERE THEY ARE", coords);
             callback(address, coords);
@@ -119,9 +130,121 @@ function getLocationData() {
     return locationData
 }
 
+
+function getWikiImage(loc, title,callback) {
+    //return a summary and image of the location from wiki
+    //right now this takes two querries, maybe find a way to reduce to only 1
+    // Question: do this immediately or only when the user selects "read more"
+    // on the map page.
+
+    var wikiImageQueryBase = "http://en.wikipedia.org/w/api.php?action=query&titles=QUERY_STRING&prop=pageimages&format=json&pithumbsize=500"
+    wikiImageQueryBase = wikiImageQueryBase.replace("QUERY_STRING", loc);
+
+
+    console.log(loc);
+    console.log(title);
+    $.get(
+        wikiImageQueryBase,
+        function(data) {
+            console.log(data.query.search)
+            var pageKey = Object.keys(data.query.pages)
+            if (!(pageKey)) {
+                console.log("NO IMAGE PAGE RESULTS");
+                return callback();
+            }
+            // console.log(pageKey)
+            // console.log(response.responseJSON.query.pages[pageKey])
+            var imageUrl;
+            if (data.query.pages[pageKey].thumbnail.source) {
+                imageUrl = data.query.pages[pageKey].thumbnail.source;
+            }
+            console.log(imageUrl);
+
+            // now set extract of loc
+            if (loc in locations) {
+                l = locations[loc];
+                l.imageUrl = imageUrl;
+            }
+            return callback()
+        }
+    );
+}
+
+
+
+function getWikiSummary(loc, url, callback) {
+    console.log(url);
+    var wikiExtractQueryBase = "http://en.wikipedia.org/w/api.php?action=query&prop=extracts|info&exintro&titles=QUERY_STRING&format=json&inprop=url";
+    wikiExtractQueryBase = wikiExtractQueryBase.replace("QUERY_STRING", loc);
+    $.get(
+        wikiExtractQueryBase,
+        function(data) {
+            console.log(data.query.search)
+            var pageKey = Object.keys(data.query.pages)
+            if (!(pageKey)) {
+                console.log("NO SEARCH RESULTS");
+                return callback();
+            }
+            // console.log(pageKey)
+            // console.log(response.responseJSON.query.pages[pageKey])
+            var extract = data.query.pages[pageKey].extract;
+            var title = data.query.pages[pageKey].title;
+            console.log(extract);
+
+            // now set extract of loc
+            if (loc in locations) {
+                l = locations[loc];
+                l.extract = extract;
+            }
+            return getWikiImage(loc, title, callback);
+        }
+    );
+}
+
+
+//maaaaybe do this. Search wiki for the first result of location, use that to get image and extract from result title.
+
+
+// can also use this for images -- 
+// http://en.wikipedia.org/w/api.php?action=query&titles=QUERY_STRING&prop=pageimages&format=json&pithumbsize=500
+
+function getWiki(loc, callback) {
+
+    //first query WIKI api for url of corrosponding article to location
+    var wikiSearchQueryBase = "http://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srsearch=QUERY_STRING&srlimit=1"
+    wikiSearchQueryBase = wikiSearchQueryBase.replace("QUERY_STRING", loc);
+    // console.log(wikiQueryBase, loc)
+    var response;
+    $.get(
+        wikiSearchQueryBase,
+        function(data) {
+
+            console.log(data.query.search)
+            var results = data.query.search;
+            if (!(results)) {
+                console.log("NO SEARCH RESULTS");
+                return callback();
+            }
+            // console.log(pageKey)
+            // console.log(response.responseJSON.query.pages[pageKey])
+            var title = results[0].title;
+            console.log(title);
+            return getWikiSummary(loc, "http://en.wikipedia.org/wiki/" + title, callback);
+        }
+    );
+
+
+
+
+}
+
 //REMEMBER to escape locations on the front end
 
 //might want to add callback for addLocation since async, but should be alright...?
+
+// http://en.wikipedia.org/wiki/Special%3aApiSandbox#action=query&prop=extracts&format=json&exlimit=10&exintro=&titles=London
+// ^ wiki api link to get paragraph of info on a query
+
 
 // Handle request to add location
 //TODO: could change to switch statements later?
@@ -129,7 +252,6 @@ function getLocationData() {
 // coordinates? Worth the wait for the popup though..? 
 function onRequest(request, sender, sendResponse) {
     console.log(request, sender.tab, request.action);
-    //DO I EVER USE THIS?
     if (request.action == "add_location") {
         addLocation(request.newLocation);
         // sendResponse({

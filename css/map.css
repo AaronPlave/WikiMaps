@@ -3,6 +3,7 @@ html, body, .row, .col-xs-9 {
 	margin-left: 0px;
 	padding-right: 0px;
 	overflow: hidden;
+	font-family:  monospace;
 }
 
 .col-xs-3 {

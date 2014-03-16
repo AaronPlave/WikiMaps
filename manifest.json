@@ -24,8 +24,12 @@
     "permissions": [
         "tabs",
         "contextMenus",
+        "webRequest",
         "https://maps.google.com/*",
-        "https://maps.googleapis.com/*"
+        "https://maps.googleapis.com/*",
+        "http://en.wikipedia.org/",
+        "http://dbpedia.org/",
+        "http://upload.wikimedia.org/wikipedia/"
     ],
     "browser_action": {
         "default_name": "Display Map",
@@ -33,5 +37,5 @@
         "default_popup": "html/popup.html"
     },
     "manifest_version": 2,
-    "content_security_policy": "default-src 'none'; font-src https://*.googleusercontent.com/; style-src 'self' 'unsafe-inline' https://*.googleapis.com/; script-src 'self' 'unsafe-eval' https://maps.gstatic.com/ https://*.googleapis.com/; connect-src 'self' https://maps.googleapis.com/ https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false; img-src https://maps.google.com https://*.googleapis.com/ https://*.gstatic.com/"
+    "content_security_policy": "default-src 'none'; font-src https://*.googleusercontent.com/; style-src 'self' 'unsafe-inline' https://*.googleapis.com/; script-src 'self' 'unsafe-eval' https://maps.gstatic.com/ https://*.googleapis.com/; connect-src 'self' http://dbpedia.org/ http://en.wikipedia.org/ https://maps.googleapis.com/ https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false; img-src http://upload.wikimedia.org/wikipedia/ https://maps.google.com https://*.googleapis.com/ https://*.gstatic.com/"
 }
