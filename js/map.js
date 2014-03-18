@@ -243,8 +243,8 @@ function onRowClick(loc) {
 
 
 function removeMarker(marker) {
-    console.log(markers)
-    console.log("del markers");
+    console.log(marker,markers,markers[marker])
+    console.log("del marker",marker);
     markers[marker].setMap(null);
     delete markers[marker]
 }
@@ -263,9 +263,11 @@ function clearTable() {
 
 function removeTableLocation(location) {
     // remove all elements in table not in locationData
-    l = $("#" + location)
+    l = document.getElementById(location);
+    console.log("removing in table",location)
+    console.log(l)
     if (l) {
-        l.parent().remove();
+        l.parentElement.remove();
     }
 }
 
@@ -273,6 +275,7 @@ function removeTableLocation(location) {
 function removeLocation(location) {
     removeTableLocation(location);
     removeMarker(location);
+
 }
 
 function clearLocations() {
@@ -280,22 +283,34 @@ function clearLocations() {
     clearTable();
 }
 
+function updateLocation(location){
+    //updates a location
+    console.log("UPDATING",location)
+
+    removeTableLocation(Object.keys(location)[0]);
+    removeMarker(Object.keys(location)[0]);
+
+    addMarkersToMap(location);
+    addLocationsToTable(location);
+}
+
 function displayLocations(locationData) {
+    console.log("DISPLAYING LOCS")
     //expecting a json object with structure:
 
     //filter out any duplicate locations
-    console.log(locationData, "HII")
     for (loc in locationData) {
         if (loc in markers) {
             delete locationData[loc];
         }
     }
-    console.log(locationData, "H2")
     addMarkersToMap(locationData);
     addLocationsToTable(locationData);
 }
 
 var markers = {};
+
+// TODO: get original wiki link and display in a read more in infowindows
 
 function addMarkersToMap(locations) {
 
@@ -373,7 +388,9 @@ function onRequest(request, sender, sendResponse) {
         removeLocation(request.removeLocation);
     } else if (request.action == "clear_locations") {
         clearLocations();
-    }
+    } else if (request.action == "update_location") {
+        updateLocation(request.updatedLocation);
+    } 
 }
 
 chrome.runtime.onMessage.addListener(onRequest);

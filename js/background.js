@@ -57,21 +57,26 @@ function updateLocation(location, coords) {
         };
         console.log(coords);
 
-        //async get data but don't wait around for this to happen,
-        // just push another locations update on return of getWiki.
-        getWiki(location, function() {
-            chrome.runtime.sendMessage({
-                action: 'update_locations',
-                updatedLocations: locations
-            })
-        })
-
         //push locations out to whoever is listening-- i.e. 
         //content script and popup
         chrome.runtime.sendMessage({
             action: 'update_locations',
             updatedLocations: locations
         })
+
+        //async get data but don't wait around for this to happen,
+        // just push another locations update on return of getWiki.
+        getWiki(location, function() {
+            loc = {};
+            loc[location] = locations[location];
+            console.log(locations,loc,"LOCAWRFHSNODF")
+            chrome.runtime.sendMessage({
+                action: 'update_location',
+                updatedLocation: loc
+            })
+        })
+
+        
     }
 }
 
