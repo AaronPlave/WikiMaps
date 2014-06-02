@@ -185,12 +185,14 @@ function initialize() {
 google.maps.event.addDomListener(window, 'load', initialize);
 
 //make request to extension for locations OR just grab coords from request?
+
 function getLocationData() {
     console.log("getting locations");
     chrome.runtime.sendMessage({
             'action': 'get_location_data'
         },
         //callback to get locations, background will pass back new list
+
         function(response) {
             console.log("get locations response", response)
             displayLocations(response.locationData);
@@ -206,10 +208,12 @@ function getLocationData() {
 // Maybe have a load-2+-pts-to-GMaps
 
 // TODO: implement method to remove locations onClick
+
 function removeLocation() {};
 
 
 //wire up listener for locations in rows
+
 function setRowListeners() {
     //maybe set a hover listener to make
     //all other locs opaque when any row
@@ -230,6 +234,7 @@ function onRowClick(loc) {
         m = markers[loc];
         map.panTo(m.getPosition());
         map.setZoom(9)
+        google.maps.event.trigger(m,'click')
     }
 };
 
@@ -243,8 +248,8 @@ function onRowClick(loc) {
 
 
 function removeMarker(marker) {
-    console.log(marker,markers,markers[marker])
-    console.log("del marker",marker);
+    console.log(marker, markers, markers[marker])
+    console.log("del marker", marker);
     markers[marker].setMap(null);
     delete markers[marker]
 }
@@ -264,7 +269,7 @@ function clearTable() {
 function removeTableLocation(location) {
     // remove all elements in table not in locationData
     l = document.getElementById(location);
-    console.log("removing in table",location)
+    console.log("removing in table", location)
     console.log(l)
     if (l) {
         l.parentElement.remove();
@@ -283,9 +288,9 @@ function clearLocations() {
     clearTable();
 }
 
-function updateLocation(location){
+function updateLocation(location) {
     //updates a location
-    console.log("UPDATING",location)
+    console.log("UPDATING", location)
 
     removeTableLocation(Object.keys(location)[0]);
     removeMarker(Object.keys(location)[0]);
@@ -355,9 +360,13 @@ function addLocationsToTable(locations) {
     for (loc in locations) {
         var contentString =
             '<tr id="locTr">' +
-            '<td class="rowLocation" id="' + loc + '"">' + loc + '</td>' +
-            '<td>' + locations[loc].x + ' ' + locations[loc].y + '</td>' +
-            '</tr>'
+            '<td class="rowLocation" id=' + loc + '>' + loc + '</td>' +
+            "<td class='removeButton'><button class='deleteLoc' id='" + loc + "R" + "'>X</button></td>" +
+
+        //this was to add coords
+        // '<td>' + locations[loc].x + ' ' + locations[loc].y + '</td>' +
+        //instead, add the remove buttons
+        '</tr>'
         locList.append(contentString);
     }
 
@@ -378,6 +387,7 @@ function addLocationsToTable(locations) {
 getLocationData();
 
 //Listener for new location data
+
 function onRequest(request, sender, sendResponse) {
     console.log(request, sender.tab, request.action);
     if (request.action == "update_locations") {
@@ -390,7 +400,7 @@ function onRequest(request, sender, sendResponse) {
         clearLocations();
     } else if (request.action == "update_location") {
         updateLocation(request.updatedLocation);
-    } 
+    }
 }
 
 chrome.runtime.onMessage.addListener(onRequest);
