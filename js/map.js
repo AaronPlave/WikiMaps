@@ -130,6 +130,11 @@ function initialize() {
     window.onresize = function(event) {
         setTbodyHeight();
     }
+
+    $("#addLocationDiv")[0].addEventListener("submit", function(evt) {
+        evt.preventDefault();
+        onAddLocationSubmit();
+    });
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
@@ -161,22 +166,32 @@ function getLocationData() {
 
 //wire up listener for locations in rows
 
+function removeEventListeners(elementName) {
+    console.log("removing Event listeners for ",elementName);
+    var elements = $(elementName);
+    //removing old event listeners
+    for (var i = 0; i < elements.length; i++) {
+        var rr = elements[i]
+        var rClone = rr.cloneNode(true);
+        rr.parentNode.replaceChild(rClone, rr);
+    }
+}
+
 function setRowListeners() {
     //maybe set a hover listener to make
     //all other locs opaque when any row
     //is being hovered over
-    console.log("setting")
-    rowLocations = $(".rowLocation");
-    console.log(rowLocations)
+    
+    removeEventListeners(".rowLocation");
+    //make sure to grab them again since they've now changed
+    var rowLocations = $(".rowLocation");
     rowLocations.on('click', function() {
         onRowClick(this.id)
     })
-
+    console.log("done setting");
     //on click of a location 
 }
 
-
-"http://maps.google.com/maps?q=1683 Mass Ave, Cambridge, MA"
 
 function onReadMoreClick() {
     console.log("OPENING");
@@ -191,15 +206,16 @@ function onReadMoreClick() {
         openLocation.location.x + ", " + openLocation.location.y + '<a id="viewInGmaps" target="_blank" href="http://maps.google.com/maps?q=' +
         openLocation.location.x + "," + openLocation.location.y + '">' + 'View in Google Maps' + '</a></div>' +
         '<div class="well">'
-
     if (openLocation.location.imageUrl) {
         contentString += '<img class="img-thumbnail" src="' + openLocation.location.imageUrl + '">';
     }
     if (openLocation.location.extract) {
+        contentString += "<div id='wikiSource'>Wikipedia Link: <a href=" +
+            openLocation.location.wikiSource + ">" + openLocation.location.wikiSource +
+            "</a><hr></hr></div>";
         contentString += '<div id="locDescription"' + openLocation.location.extract;
-    }
-    else {
-        contentString +=  '<div id="locDescription"> Unable to find Wikipedia data for this location'
+    } else {
+        contentString += '<div id="locDescription"> Unable to find Wikipedia data for this location'
     }
 
     contentString += '<div/></div>';
@@ -221,6 +237,7 @@ function onRowClick(loc) {
 };
 
 function setRemoveButtonListeners() {
+    removeEventListeners(".deleteLoc");
     removeButton = $(".deleteLoc");
     removeButton.on('click', function() {
         onRemoveButtonClick(this.id)
@@ -229,10 +246,36 @@ function setRemoveButtonListeners() {
 
 function onRemoveButtonClick(loc) {
     if (loc in markers) {
+        console.log("SENT REQUEST TO RM LOC")
         removeLocationFromBackend(loc);
     }
 }
 
+
+
+function onAddLocationSubmit() {
+    raw = $("#addLocationInput")[0].value
+    loc = escapeHtml(raw);
+    console.log(loc);
+    chrome.runtime.sendMessage({
+            'action': 'add_location',
+            'newLocation': loc
+        },
+        //callback to refresh locations, background will pass back new list
+
+        function(responseLocations) {
+            console.log(responseLocations);
+            displayLocations(responseLocations.updatedLocations);
+        }
+    )
+    $("#addLocationInput")[0].value = "";
+}
+
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+};
 
 // moves to position on map, maybe changes the color, 
 // maybe pops up more info, maybe calc distances btwn 
@@ -245,8 +288,10 @@ function onRemoveButtonClick(loc) {
 function removeMarker(marker) {
     console.log(marker, markers, markers[marker])
     console.log("del marker", marker);
-    markers[marker].setMap(null);
-    delete markers[marker]
+    if (markers[marker]) {
+        markers[marker].setMap(null);
+        delete markers[marker]
+    }
 }
 
 function clearMarkers() {
@@ -318,8 +363,9 @@ var markers = {};
 //set size of tbody to 
 //$(document).height()*.80
 //on resize, recalculate and update.
+
 function setTbodyHeight() {
-    $("tbody").height($(document).height()*.70);
+    $("tbody").height($(document).height() * .70);
 }
 
 function addMarkersToMap(locations) {
@@ -412,6 +458,20 @@ function addLocationsToTable(locations) {
 getLocationData();
 
 
+// function removeLocation(location) {
+//     chrome.runtime.sendMessage({
+//             'action': 'remove_location',
+//             'removeLocation': location
+//         },
+//         //callback to refresh locations, background will pass back new list
+
+//         function(responseLocations) {
+//             console.log(responseLocations)
+//             refreshLocations(responseLocations.updatedLocations);
+//         }
+//     )
+// }
+
 //removes a location from the list and sends a message to the background to remove from real list
 
 function removeLocationFromBackend(location) {
@@ -424,7 +484,7 @@ function removeLocationFromBackend(location) {
         function(responseLocations) {
             console.log(responseLocations);
             removeLocation(location);
-            displayLocations(responseLocations.updatedLocations);
+            // displayLocations(responseLocations.updatedLocations);
         }
     )
 }

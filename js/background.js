@@ -1,4 +1,5 @@
 //Wire up the context menu
+
 function onMenuClick(info, tab) {
     var rawString = info.selectionText;
     var escapedString = escapeHtml(rawString);
@@ -12,6 +13,9 @@ chrome.contextMenus.create({
     "contexts": ["selection"],
     "onclick": onMenuClick
 })
+
+
+
 
 function geoFilter(string) {
     //
@@ -34,6 +38,27 @@ function escapeHtml(str) {
 
 
 locations = {};
+
+//functions for storing and sretrieving the data locally
+
+function saveDataLocally() {
+    console.log("SAVING DATA LOCALLY",locations)
+    chrome.storage.local.set({
+        'locationData': locations
+    })
+}
+
+function retrieveLocalData() {
+    try {
+        chrome.storage.local.get("locationData",
+            function(locationData) {
+                locations = locationData["locationData"];
+            })
+    } 
+    catch (err){
+        console.log(err);
+    }
+}
 
 console.log("loaded background.js")
 
@@ -63,20 +88,22 @@ function updateLocation(location, coords) {
             action: 'update_locations',
             updatedLocations: locations
         })
+        saveDataLocally();
 
         //async get data but don't wait around for this to happen,
         // just push another locations update on return of getWiki.
         getWiki(location, function() {
             loc = {};
             loc[location] = locations[location];
-            console.log(locations,loc,"LOCAWRFHSNODF")
+            console.log(locations, loc, "gotWiki");
+            saveDataLocally();
             chrome.runtime.sendMessage({
                 action: 'update_location',
                 updatedLocation: loc
             })
         })
 
-        
+
     }
 }
 
@@ -105,9 +132,9 @@ var geocoder;
 
 function initialize() {
     geocoder = new google.maps.Geocoder();
+    retrieveLocalData();
 }
 
-///WHEN GEOLOCATING, add a create date to each geolocation, if > 30ish days, re-do
 function geolocate(address, callback) {
     //uses google api to geolocate addresses
     console.log("geocoding: ", address)
@@ -135,14 +162,14 @@ function getLocationData() {
 }
 
 
-function getWikiImage(loc, title,callback) {
+function getWikiImage(loc, title, callback) {
     //return a summary and image of the location from wiki
     //right now this takes two querries, maybe find a way to reduce to only 1
     // Question: do this immediately or only when the user selects "read more"
     // on the map page.
 
     var wikiImageQueryBase = "http://en.wikipedia.org/w/api.php?action=query&titles=QUERY_STRING&prop=pageimages&format=json&pithumbsize=400"
-    wikiImageQueryBase = wikiImageQueryBase.replace("QUERY_STRING", loc);
+    wikiImageQueryBase = wikiImageQueryBase.replace("QUERY_STRING", title);
 
 
     console.log(loc);
@@ -159,8 +186,10 @@ function getWikiImage(loc, title,callback) {
             // console.log(pageKey)
             // console.log(response.responseJSON.query.pages[pageKey])
             var imageUrl;
-            if (data.query.pages[pageKey].thumbnail.source) {
-                imageUrl = data.query.pages[pageKey].thumbnail.source;
+            if (data.query.pages[pageKey].thumbnail) {
+                if (data.query.pages[pageKey].thumbnail.source) {
+                    imageUrl = data.query.pages[pageKey].thumbnail.source;
+                }
             }
             console.log(imageUrl);
 
@@ -176,10 +205,15 @@ function getWikiImage(loc, title,callback) {
 
 
 
-function getWikiSummary(loc, url, callback) {
+//if there is a summary, fetches summary also source url.
+
+function getWikiSummary(loc, url, title, callback) {
     console.log(url);
-    var wikiExtractQueryBase = "http://en.wikipedia.org/w/api.php?action=query&prop=extracts|info&exintro&titles=QUERY_STRING&format=json&inprop=url";
-    wikiExtractQueryBase = wikiExtractQueryBase.replace("QUERY_STRING", loc);
+    var wikiExtractQueryBase = "http://en.wikipedia.org/w/api.php?action=query&prop=extracts|info&exintro&titles=QUERY_STRING&format=json&inprop=url&redirects";
+    //should I replace spaces with underscores or %20?
+    wikiExtractQueryBase = wikiExtractQueryBase.replace("QUERY_STRING", title);
+    // http://en.wikipedia.org/w/api.php?action=query&prop=extracts|info&exintro&titles=Siem%20Reap&format=json&inprop=url&redirects
+    console.log(wikiExtractQueryBase, "BASE");
     $.get(
         wikiExtractQueryBase,
         function(data) {
@@ -193,12 +227,14 @@ function getWikiSummary(loc, url, callback) {
             // console.log(response.responseJSON.query.pages[pageKey])
             var extract = data.query.pages[pageKey].extract;
             var title = data.query.pages[pageKey].title;
+            var source = data.query.pages[pageKey].fullurl;
             console.log(extract);
 
             // now set extract of loc
             if (loc in locations) {
                 l = locations[loc];
                 l.extract = extract;
+                l.wikiSource = source;
             }
             return getWikiImage(loc, title, callback);
         }
@@ -217,7 +253,7 @@ function getWiki(loc, callback) {
     //first query WIKI api for url of corrosponding article to location
     var wikiSearchQueryBase = "http://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srsearch=QUERY_STRING&srlimit=1"
     wikiSearchQueryBase = wikiSearchQueryBase.replace("QUERY_STRING", loc);
-    // console.log(wikiQueryBase, loc)
+    console.log(wikiSearchQueryBase, loc)
     var response;
     $.get(
         wikiSearchQueryBase,
@@ -233,7 +269,7 @@ function getWiki(loc, callback) {
             // console.log(response.responseJSON.query.pages[pageKey])
             var title = results[0].title;
             console.log(title);
-            return getWikiSummary(loc, "http://en.wikipedia.org/wiki/" + title, callback);
+            return getWikiSummary(loc, "http://en.wikipedia.org/wiki/" + title, title, callback);
         }
     );
 
@@ -241,8 +277,6 @@ function getWiki(loc, callback) {
 
 
 }
-
-//REMEMBER to escape locations on the front end
 
 //might want to add callback for addLocation since async, but should be alright...?
 
@@ -254,15 +288,18 @@ function getWiki(loc, callback) {
 //TODO: could change to switch statements later?
 //TODO: add callbacks for adding locations so that you get updated
 // coordinates? Worth the wait for the popup though..? 
+
 function onRequest(request, sender, sendResponse) {
     console.log(request, sender.tab, request.action);
     if (request.action == "add_location") {
         addLocation(request.newLocation);
-        // sendResponse({
-        //     updatedLocations: locations
-        // });
+        sendResponse({
+            updatedLocations: locations
+        });
     } else if (request.action == "remove_location") {
         removeLocation(request.removeLocation);
+        // console.log("REQUEST TO REMOVE LOCATION");
+        saveDataLocally()
         sendResponse({
             updatedLocations: locations
         });
@@ -284,6 +321,7 @@ function onRequest(request, sender, sendResponse) {
     } else if (request.action == "clear_locations") {
         console.log("clearing locations")
         clearLocations();
+        saveDataLocally();
         //shouldn't need a callback here, it's a quick op..
         sendResponse({
             locationData: locations
