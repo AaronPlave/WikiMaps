@@ -1,88 +1,90 @@
-/**
- * Copyright (c) 2011 The Chromium Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
-
+@font-face {
+    font-family:'Copse-webfont';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/Copse-webfont.woff') format('woff');
+}
+@font-face {
+    font-family:'Matiz-webfont';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/Matiz-webfont.woff') format('woff');
+}
 body {
-  margin: 0px;
-  padding: 0px 10px 10px 10px;
-  width: 260px;
-  height: 400px;
-  text-align: center;
-  font-family:  monospace;
+    margin: 0px;
+    padding: 0px 10px 10px 10px;
+    width: 260px;
+    height: 400px;
+    text-align: center;
+    font-family: Copse-webfont;
+}
+h1, h2, h3, h4 {
+    font-family: Matiz-webfont;
 }
 
+*:focus {
+    outline: 0;
+}
 .mainPopup {
-	padding: 10px;
-	/*text-align: center !important;*/
+    padding: 10px;
+    /*text-align: center !important;*/
 }
-
 #display_map {
-	display: inline-block;
-	border-top-left-radius: 40px;
-	border-bottom-right-radius: 40px;
-	border-color: white;
-	color: rgb(77, 77, 85);
-	background-color: rgba(70, 188, 236, 0.5);
-	padding-left: 14px;
-	padding-right: 14px;
-	border-style: dotted;
+    display: inline-block;
+    border-top-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    border-color: white;
+    color: rgb(77, 77, 85);
+    background-color: rgba(70, 188, 236, 0.5);
+    padding-left: 14px;
+    padding-right: 14px;
+    border-style: dotted;
 }
-
 #display_map:hover {
     background-color: rgba(70, 188, 236, 0.7);
 }
-
 #clear_locations {
-	display: inline-block;
-	border-top-right-radius: 40px;
-	border-bottom-left-radius: 40px;
-	border-color: white;
-	color: rgb(77, 77, 85);
-	background-color: rgba(221, 87, 97, 0.4);
-	padding-left: 14px;
-	padding-right: 14px;
-	border-style: dotted;
+    display: inline-block;
+    border-top-right-radius: 40px;
+    border-bottom-left-radius: 40px;
+    border-color: white;
+    color: rgb(77, 77, 85);
+    background-color: rgba(221, 87, 97, 0.4);
+    padding-left: 14px;
+    padding-right: 14px;
+    border-style: dotted;
 }
-
 #clear_locations:hover {
-    background-color: rgba(221, 87, 97, 0.6);;
+    background-color: rgba(221, 87, 97, 0.6);
+    ;
 }
-
 #buttonDiv {
-	padding-bottom: 12px;
+    padding-bottom: 12px;
 }
-
 #locationList {
-	padding: 0px;
+    padding: 0px;
 }
-
 .clear_list {
-	display: inline-block;
+    display: inline-block;
 }
-
 #locTD {
-	/*float: right;*/
+    /*float: right;*/
 }
-
 .deleteLoc {
-	display: inline-block;
-	font-family: inherit;
-	font-size: inherit;
-	border-radius: 50px;
-	color: rgba(255, 0, 0, 0.71);
-	line-height: inherit;
-	background: rgba(0, 0, 255, 0);
+    display: inline-block;
+    font-family: inherit;
+    font-size: inherit;
+    border-radius: 50px;
+    color: rgba(255, 0, 0, 0.71);
+    line-height: inherit;
+    background: rgba(0, 0, 255, 0);
 }
-
 .deleteLoc:hover {
-	background: rgba(255, 0, 0, 0.71);
-	color: white;
+    background: rgba(255, 0, 0, 0.71);
+    color: white;
 }
-
 .removeButton {
-	text-align: center !important;
-	width: 20%;
-	/*padding: 10% !important;*/
+    text-align: center !important;
+    width: 20%;
+    /*padding: 10% !important;*/
 }

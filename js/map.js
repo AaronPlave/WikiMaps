@@ -193,7 +193,7 @@ function onReadMoreClick() {
         '<div class="well">'
 
     if (openLocation.location.imageUrl) {
-        contentString += '<img src="' + openLocation.location.imageUrl + '">';
+        contentString += '<img class="img-thumbnail" src="' + openLocation.location.imageUrl + '">';
     }
     if (openLocation.location.extract) {
         contentString += '<div id="locDescription"' + openLocation.location.extract;

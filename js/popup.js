@@ -31,11 +31,13 @@ function setOnClickListeners(locations) {
 //clears all locations via sending clear message to background and 
 //receiving a new list (which should be empty) and displaying it.
 //if the list is not empty then there is a problem (obviously).
+
 function clearLocations() {
     chrome.runtime.sendMessage({
             'action': 'clear_locations'
         },
         //callback to refresh locations, background will pass back new list
+
         function(responseLocations) {
             refreshLocations(responseLocations.updatedLocations);
         }
@@ -43,12 +45,14 @@ function clearLocations() {
 }
 
 //removes a location from the list and sends a message to the background to remove from real list
+
 function removeLocation(location) {
     chrome.runtime.sendMessage({
             'action': 'remove_location',
             'removeLocation': location
         },
         //callback to refresh locations, background will pass back new list
+
         function(responseLocations) {
             console.log(responseLocations)
             refreshLocations(responseLocations.updatedLocations);
@@ -57,6 +61,7 @@ function removeLocation(location) {
 }
 
 //updates the list of locations in the popup
+
 function refreshLocations(locations) {
     locList = $("#locationTable");
     locList[0].innerHTML = "";
@@ -85,24 +90,28 @@ function refreshLocations(locations) {
         clean: true,
         cleanElements: "th td",
     });
+
     setOnClickListeners(locations);
 }
 
 //pulls current list of locations from background
+
 function getLocations() {
     console.log("getting locations");
     chrome.runtime.sendMessage({
             'action': 'get_locations'
         },
         //callback to get locations, background will pass back new list
+
         function(response) {
             console.log("get locations response")
-            refreshLocations(response.updatedLocations);
+            refreshLocations(response.updatedLocations);            
         }
     )
 }
 
 //send message to background to navigate to map page
+
 function displayLocations() {
     console.log("displaying locations")
     chrome.runtime.sendMessage({
@@ -111,6 +120,7 @@ function displayLocations() {
 }
 
 //Listener for new location data
+
 function onRequest(request, sender, sendResponse) {
     console.log(request, sender.tab, request.action);
     if (request.action == "update_locations") {
