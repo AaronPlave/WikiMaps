@@ -116,3 +116,6 @@ tbody td, thead th {
     display: inline;
     float: right;
 }
+.gInfowindow {
+	text-align: center;
+}

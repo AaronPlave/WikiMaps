@@ -110,11 +110,12 @@ function initialize() {
     map = new google.maps.Map(document.getElementById("map-canvas"),
         mapOptions);
 
+    //listener for read more click
     $('#myModal').on('show.bs.modal', function(e) {
         onReadMoreClick();
     })
 
-
+    //listen for clicks to map
     google.maps.event.addListener(
         map,
         'click',
@@ -125,7 +126,10 @@ function initialize() {
         }
     );
 
-
+    //listener for document resize
+    window.onresize = function(event) {
+        setTbodyHeight();
+    }
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
@@ -184,10 +188,22 @@ function onReadMoreClick() {
     var titleString = openLocation.title;
 
     var contentString = '<div id="content" class="well">Coordinates: ' +
-        openLocation.location.x + ", " + openLocation.location.y + '<a id="viewInGmaps" target="_blank" href="http://maps.google.com/maps?q='+
-        openLocation.location.x + "," + openLocation.location.y +'">' + 'View in Google Maps' +'</a></div>' + 
-        '<div class="well">' + '<img src="' + openLocation.location.imageUrl + '">' +
-        '<div id="locDescription"' + openLocation.location.extract + '<div/></div>';
+        openLocation.location.x + ", " + openLocation.location.y + '<a id="viewInGmaps" target="_blank" href="http://maps.google.com/maps?q=' +
+        openLocation.location.x + "," + openLocation.location.y + '">' + 'View in Google Maps' + '</a></div>' +
+        '<div class="well">'
+
+    if (openLocation.location.imageUrl) {
+        contentString += '<img src="' + openLocation.location.imageUrl + '">';
+    }
+    if (openLocation.location.extract) {
+        contentString += '<div id="locDescription"' + openLocation.location.extract;
+    }
+    else {
+        contentString +=  '<div id="locDescription"> Unable to find Wikipedia data for this location'
+    }
+
+    contentString += '<div/></div>';
+
     modalTitle.innerHTML = titleString;
     modalBody.innerHTML = contentString;
     console.log(openLocation);
@@ -290,12 +306,21 @@ function displayLocations(locationData) {
     }
     addMarkersToMap(locationData);
     addLocationsToTable(locationData);
+    setTbodyHeight();
 }
 
 var markers = {};
 
 // TODO: get original wiki link and display in a read more in infowindows
 
+
+
+//set size of tbody to 
+//$(document).height()*.80
+//on resize, recalculate and update.
+function setTbodyHeight() {
+    $("tbody").height($(document).height()*.70);
+}
 
 function addMarkersToMap(locations) {
 
@@ -315,8 +340,8 @@ function addMarkersToMap(locations) {
         //     '<div id="locDescription"' + locations[loc].extract + '<div/></div>';
 
         //NEW REDUCED INFO WAY
-        var contentString = '<div><div id="content">' + loc +
-            '</div>' + '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" id="readMoreModal">' + 'Read more' + '</button>' + '</div>'
+        var contentString = '<div class="gInfowindow"><h4 id="content">' + loc +
+            '</h4>' + '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" id="readMoreModal">' + 'Read more' + '</button>' + '</div>'
 
         var infowindow = new google.maps.InfoWindow({
             content: contentString,
@@ -356,7 +381,7 @@ function addLocationsToTable(locations) {
     console.log("LOCTABLE", locations)
     locList = $("#locationTable");
     for (loc in locations) {
-        console.log("!!",'id=' + loc);
+        console.log("!!", 'id=' + loc);
         var contentString =
             '<tr id="locTr">' +
             '<td class="rowLocation" id="' + loc + '">' + loc + '</td>' +
