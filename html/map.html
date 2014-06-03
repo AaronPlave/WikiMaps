@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title>Simple Map</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
@@ -19,40 +20,55 @@
     <link href="../css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <script src="../js/map.js"></script>
     <link href="../css/map.css" rel="stylesheet" type="text/css">
-  </head>
-  <body>
-    <!-- <div class="row" id="headerRow">
-      <div id="titleDiv">
-        <h2 id="title"> Map Select</h2>
-      </div>
-    </div> -->
+</head>
+
+<body>
     <div class="row">
-      
-      <div class="col-xs-3" id="tableCol">
-        <div class="row" id="headerRow">
-          <div id="titleDiv">
-            <h2 id="title"> Map Select</h2>
-          </div>
+
+        <div class="col-xs-3" id="tableCol">
+            <div class="row" id="headerRow">
+                <div id="titleDiv">
+                    <h2 id="title">Map Select</h2>
+                </div>
+            </div>
+            <div class="tableDiv">
+                <h3>Locations</h3>
+                <table id="locationTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="locTh">Location</th>
+                            <th class="removeTh">Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody id="locTbody">
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="tableDiv">
-          <h3> Locations</h3>
-          <table id="locationTable" class="table table-striped">
-            <thead>
-              <tr>
-                <th class="locTh">Location</th>
-                <th class="removeTh">Remove</th>
-              </tr>
-            </thead>
-            <tbody id="locTbody">
-            </tbody>
-          </table>
+        <div class="col-xs-9">
+            <div class="google-map-canvas" id="map-canvas">
+            </div>
+
         </div>
-      </div>
-      <div class="col-xs-9">
-        <div class="google-map-canvas" id="map-canvas">
-        </div>
-        
-      </div>
     </div>
-  </body>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h2 class="modal-title" id="myModalLabel">Modal title</h2>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
 </html>

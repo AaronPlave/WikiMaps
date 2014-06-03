@@ -1,4 +1,6 @@
 var map;
+var lastInfowindow;
+var openLocation;
 
 unimposed = [{
     "featureType": "administrative",
@@ -108,77 +110,21 @@ function initialize() {
     map = new google.maps.Map(document.getElementById("map-canvas"),
         mapOptions);
 
+    $('#myModal').on('show.bs.modal', function(e) {
+        onReadMoreClick();
+    })
 
 
-    // google.maps.event.addListener(map, 'bounds_changed', function() {
-    //     google.maps.event.addListener(map, 'center_changed', function() {
-    //         var sw = new google.maps.LatLng(0.00, 90.00);
-    //         var ne = new google.maps.LatLng(0.00, 0.00);
-    //         var allowedBounds = new google.maps.LatLngBounds(sw, ne);
-    //         if (!allowedBounds.contains(map.getCenter())) {
-    //             var C = map.getCenter();
-    //             var X = C.lng();
-    //             var Y = C.lat();
+    google.maps.event.addListener(
+        map,
+        'click',
+        function() {
+            if (lastInfowindow) {
+                lastInfowindow.close();
+            }
+        }
+    );
 
-    //             var AmaxX = allowedBounds.getNorthEast().lng();
-    //             var AmaxY = allowedBounds.getNorthEast().lat();
-    //             var AminX = allowedBounds.getSouthWest().lng();
-    //             var AminY = allowedBounds.getSouthWest().lat();
-
-    //             if (X < AminX) {
-    //                 X = AminX;
-    //             }
-    //             if (X > AmaxX) {
-    //                 X = AmaxX;
-    //             }
-    //             if (Y < AminY) {
-    //                 Y = AminY;
-    //             }
-    //             if (Y > AmaxY) {
-    //                 Y = AmaxY;
-    //             }
-
-    //             map.setCenter(new google.maps.LatLng(Y, X));
-    //         }
-    //     });
-    // });
-    // google.maps.event.addListener(map, 'center_changed', function() {
-    //     checkBounds();
-    // });
-    // boundary fix
-
-    // var allowedBounds = new google.maps.LatLngBounds(
-    //     new google.maps.LatLng(80, -160), // top left corner of map
-    //     new google.maps.LatLng(-80, 160) // bottom right corner
-    // );
-
-    // function checkBounds() {
-    //     if (!allowedBounds.contains(map.getCenter())) {
-    //         var C = map.getCenter();
-    //         var X = C.lng();
-    //         var Y = C.lat();
-
-    //         var AmaxX = allowedBounds.getNorthEast().lng();
-    //         var AmaxY = allowedBounds.getNorthEast().lat();
-    //         var AminX = allowedBounds.getSouthWest().lng();
-    //         var AminY = allowedBounds.getSouthWest().lat();
-
-    //         if (X < AminX) {
-    //             X = AminX;
-    //         }
-    //         if (X > AmaxX) {
-    //             X = AmaxX;
-    //         }
-    //         if (Y < AminY) {
-    //             Y = AminY;
-    //         }
-    //         if (Y > AmaxY) {
-    //             Y = AmaxY;
-    //         }
-
-    //         map.setCenter(new google.maps.LatLng(Y, X));
-    //     }
-    // }
 
 }
 
@@ -209,9 +155,6 @@ function getLocationData() {
 
 // TODO: implement method to remove locations onClick
 
-function removeLocation() {};
-
-
 //wire up listener for locations in rows
 
 function setRowListeners() {
@@ -228,15 +171,51 @@ function setRowListeners() {
     //on click of a location 
 }
 
+
+"http://maps.google.com/maps?q=1683 Mass Ave, Cambridge, MA"
+
+function onReadMoreClick() {
+    console.log("OPENING");
+    modal = $("#readMoreModal");
+
+    modalTitle = $(".modal-title")[0];
+    modalBody = $(".modal-body")[0];
+
+    var titleString = openLocation.title;
+
+    var contentString = '<div id="content" class="well">Coordinates: ' +
+        openLocation.location.x + ", " + openLocation.location.y + '<a id="viewInGmaps" target="_blank" href="http://maps.google.com/maps?q='+
+        openLocation.location.x + "," + openLocation.location.y +'">' + 'View in Google Maps' +'</a></div>' + 
+        '<div class="well">' + '<img src="' + openLocation.location.imageUrl + '">' +
+        '<div id="locDescription"' + openLocation.location.extract + '<div/></div>';
+    modalTitle.innerHTML = titleString;
+    modalBody.innerHTML = contentString;
+    console.log(openLocation);
+}
+
+
 function onRowClick(loc) {
     console.log(loc, 1)
     if (loc in markers) {
         m = markers[loc];
         map.panTo(m.getPosition());
         map.setZoom(9)
-        google.maps.event.trigger(m,'click')
+        google.maps.event.trigger(m, 'click')
     }
 };
+
+function setRemoveButtonListeners() {
+    removeButton = $(".deleteLoc");
+    removeButton.on('click', function() {
+        onRemoveButtonClick(this.id)
+    })
+}
+
+function onRemoveButtonClick(loc) {
+    if (loc in markers) {
+        removeLocationFromBackend(loc);
+    }
+}
 
 
 // moves to position on map, maybe changes the color, 
@@ -317,6 +296,7 @@ var markers = {};
 
 // TODO: get original wiki link and display in a read more in infowindows
 
+
 function addMarkersToMap(locations) {
 
     var bounds = new google.maps.LatLngBounds()
@@ -327,9 +307,17 @@ function addMarkersToMap(locations) {
     for (loc in locations) {
         console.log(locations[loc]);
         //TODO: Add clustering of markers
-        var contentString = '<div class="infoWindowDiv"><div id="content">' + loc +
-            '</div>' + '<img src="' + locations[loc].imageUrl + '">' +
-            '<div id="locDescription"' + locations[loc].extract + '<div/></div>';
+
+
+        //OLD WAY
+        // var contentString = '<div class="infoWindowDiv"><div id="content">' + loc +
+        //     '</div>' + '<img src="' + locations[loc].imageUrl + '">' +
+        //     '<div id="locDescription"' + locations[loc].extract + '<div/></div>';
+
+        //NEW REDUCED INFO WAY
+        var contentString = '<div><div id="content">' + loc +
+            '</div>' + '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" id="readMoreModal">' + 'Read more' + '</button>' + '</div>'
+
         var infowindow = new google.maps.InfoWindow({
             content: contentString,
             maxWidth: 700,
@@ -340,10 +328,20 @@ function addMarkersToMap(locations) {
             map: map,
             title: loc
         });
+
+        //this is going to be hacky but whatever.
+        marker.location = locations[loc];
+
         google.maps.event.addListener(marker, 'click',
             function(infowindow, marker) {
                 return function() {
+                    if (lastInfowindow) {
+                        lastInfowindow.close();
+                    }
                     infowindow.open(map, marker);
+                    lastInfowindow = infowindow;
+                    openLocation = marker;
+                    console.log(marker.title);
                 };
             }(infowindow, marker)
         );
@@ -361,7 +359,7 @@ function addLocationsToTable(locations) {
         var contentString =
             '<tr id="locTr">' +
             '<td class="rowLocation" id=' + loc + '>' + loc + '</td>' +
-            "<td class='removeButton'><button class='deleteLoc' id='" + loc + "R" + "'>X</button></td>" +
+            "<td class='removeButton'><button class='deleteLoc' id='" + loc + "'>X</button></td>" +
 
         //this was to add coords
         // '<td>' + locations[loc].x + ' ' + locations[loc].y + '</td>' +
@@ -380,11 +378,30 @@ function addLocationsToTable(locations) {
         cleanElements: "th td",
     });
     setRowListeners();
+    setRemoveButtonListeners();
 }
 
 
 //get data and display
 getLocationData();
+
+
+//removes a location from the list and sends a message to the background to remove from real list
+
+function removeLocationFromBackend(location) {
+    chrome.runtime.sendMessage({
+            'action': 'remove_location',
+            'removeLocation': location
+        },
+        //callback to refresh locations, background will pass back new list
+
+        function(responseLocations) {
+            console.log(responseLocations);
+            removeLocation(location);
+            displayLocations(responseLocations.updatedLocations);
+        }
+    )
+}
 
 //Listener for new location data
 

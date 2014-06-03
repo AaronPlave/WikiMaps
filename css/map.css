@@ -1,10 +1,25 @@
+@font-face {
+    font-family:'Copse-webfont';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/Copse-webfont.woff') format('woff');
+}
+@font-face {
+    font-family:'Matiz-webfont';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/Matiz-webfont.woff') format('woff');
+}
 html, body, .row, .col-xs-9 {
     height: 100%;
     margin-left: 0px;
     padding-right: 0px;
     padding-left: 0px;
     overflow: hidden;
-    font-family: monospace;
+    font-family: Copse-webfont;
+}
+h1, h2, h3, h4 {
+    font-family: Matiz-webfont;
 }
 .col-xs-3 {
     padding-right: 0px;
@@ -12,11 +27,11 @@ html, body, .row, .col-xs-9 {
 .row {
     margin-right: 0px;
 }
-div.infoWindowDiv {
+/*div.infoWindowDiv {
     max-height:500px;
     overflow-y:auto;
-}
-#map-canvas {
+}*/
+ #map-canvas {
     width:100%;
     height:100%;
 }
@@ -96,4 +111,8 @@ tbody td, thead th {
 }
 .removeTh {
     width: 30% !important;
+}
+#viewInGmaps {
+    display: inline;
+    float: right;
 }
