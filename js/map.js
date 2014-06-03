@@ -356,9 +356,10 @@ function addLocationsToTable(locations) {
     console.log("LOCTABLE", locations)
     locList = $("#locationTable");
     for (loc in locations) {
+        console.log("!!",'id=' + loc);
         var contentString =
             '<tr id="locTr">' +
-            '<td class="rowLocation" id=' + loc + '>' + loc + '</td>' +
+            '<td class="rowLocation" id="' + loc + '">' + loc + '</td>' +
             "<td class='removeButton'><button class='deleteLoc' id='" + loc + "'>X</button></td>" +
 
         //this was to add coords
