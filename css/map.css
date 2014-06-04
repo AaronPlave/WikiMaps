@@ -63,7 +63,7 @@ hr {
     margin: 18px 0;
 }
 #wikiSource {
-    text-align: left;
+    text-align: center;
     padding-bottom: 10px;
     padding-top: 10px;
     font-style: italic;
@@ -115,6 +115,13 @@ hr {
 #tableCol {
     padding-left: 0px;
     z-index: 1;
+    cursor: default;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 /*#46bcec*/
  #headerRow {
@@ -183,7 +190,7 @@ tbody td, thead th {
     background: white;
 }
 .deleteLoc:hover {
-    background: rgba(255, 0, 0, 0.71);
+    background: rgba(255, 0, 0, 1);
     color: white;
 }
 .removeButton {
