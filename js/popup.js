@@ -1,10 +1,5 @@
-//in the popup there will be a list of locations, remove buttons for all of 
-//them, and a button to display on a map
-console.log("loaded popup.js");
-
 //make request for content
 getLocations();
-
 
 function setOnClickListeners(locations) {
     // listen for on click for display map and clear locations
@@ -17,12 +12,9 @@ function setOnClickListeners(locations) {
     }));
 
     locationElements = $(".deleteLoc");
-    // console.log(locationElements)
 
     locationElements.on('click', function() {
-        console.log("click")
         if (this.id in locations) {
-            console.log(this.id)
             removeLocation(this.id);
         }
     })
@@ -54,7 +46,6 @@ function removeLocation(location) {
         //callback to refresh locations, background will pass back new list
 
         function(responseLocations) {
-            console.log(responseLocations)
             refreshLocations(responseLocations.updatedLocations);
         }
     )
@@ -97,15 +88,13 @@ function refreshLocations(locations) {
 //pulls current list of locations from background
 
 function getLocations() {
-    console.log("getting locations");
     chrome.runtime.sendMessage({
             'action': 'get_locations'
         },
         //callback to get locations, background will pass back new list
 
         function(response) {
-            console.log("get locations response")
-            refreshLocations(response.updatedLocations);            
+            refreshLocations(response.updatedLocations);
         }
     )
 }
@@ -113,7 +102,6 @@ function getLocations() {
 //send message to background to navigate to map page
 
 function displayLocations() {
-    console.log("displaying locations")
     chrome.runtime.sendMessage({
         'action': 'display_locations'
     });
@@ -122,7 +110,6 @@ function displayLocations() {
 //Listener for new location data
 
 function onRequest(request, sender, sendResponse) {
-    console.log(request, sender.tab, request.action);
     if (request.action == "update_locations") {
         refreshLocations(request.updatedLocations);
     }

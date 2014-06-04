@@ -135,6 +135,21 @@ function initialize() {
         evt.preventDefault();
         onAddLocationSubmit();
     });
+
+    //initalize tablecloth
+    locList = $("#locationTable");
+    locList.tablecloth({
+        theme: "default",
+        bordered: true,
+        condensed: true,
+        striped: true,
+        sortable: true,
+        clean: true,
+        cleanElements: "th td",
+    });
+
+    //get data and display
+    getLocationData();
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
@@ -142,14 +157,12 @@ google.maps.event.addDomListener(window, 'load', initialize);
 //make request to extension for locations OR just grab coords from request?
 
 function getLocationData() {
-    console.log("getting locations");
     chrome.runtime.sendMessage({
             'action': 'get_location_data'
         },
         //callback to get locations, background will pass back new list
 
         function(response) {
-            console.log("get locations response", response)
             displayLocations(response.locationData);
         }
     )
@@ -162,12 +175,9 @@ function getLocationData() {
 // implement sharing, maybe just export a list of places and have people import it
 // Maybe have a load-2+-pts-to-GMaps
 
-// TODO: implement method to remove locations onClick
-
 //wire up listener for locations in rows
 
 function removeEventListeners(elementName) {
-    console.log("removing Event listeners for ",elementName);
     var elements = $(elementName);
     //removing old event listeners
     for (var i = 0; i < elements.length; i++) {
@@ -181,20 +191,18 @@ function setRowListeners() {
     //maybe set a hover listener to make
     //all other locs opaque when any row
     //is being hovered over
-    
+
     removeEventListeners(".rowLocation");
     //make sure to grab them again since they've now changed
     var rowLocations = $(".rowLocation");
     rowLocations.on('click', function() {
         onRowClick(this.id)
     })
-    console.log("done setting");
     //on click of a location 
 }
 
 
 function onReadMoreClick() {
-    console.log("OPENING");
     modal = $("#readMoreModal");
 
     modalTitle = $(".modal-title")[0];
@@ -210,7 +218,7 @@ function onReadMoreClick() {
         contentString += '<img class="img-thumbnail" src="' + openLocation.location.imageUrl + '">';
     }
     if (openLocation.location.extract) {
-        contentString += "<div id='wikiSource'>Wikipedia Link: <a href=" +
+        contentString += "<div id='wikiSource'>Wikipedia Link: <a target='blank' href=" +
             openLocation.location.wikiSource + ">" + openLocation.location.wikiSource +
             "</a><hr></hr></div>";
         contentString += '<div id="locDescription"' + openLocation.location.extract;
@@ -222,12 +230,10 @@ function onReadMoreClick() {
 
     modalTitle.innerHTML = titleString;
     modalBody.innerHTML = contentString;
-    console.log(openLocation);
 }
 
 
 function onRowClick(loc) {
-    console.log(loc, 1)
     if (loc in markers) {
         m = markers[loc];
         map.panTo(m.getPosition());
@@ -246,7 +252,6 @@ function setRemoveButtonListeners() {
 
 function onRemoveButtonClick(loc) {
     if (loc in markers) {
-        console.log("SENT REQUEST TO RM LOC")
         removeLocationFromBackend(loc);
     }
 }
@@ -256,7 +261,6 @@ function onRemoveButtonClick(loc) {
 function onAddLocationSubmit() {
     raw = $("#addLocationInput")[0].value
     loc = escapeHtml(raw);
-    console.log(loc);
     chrome.runtime.sendMessage({
             'action': 'add_location',
             'newLocation': loc
@@ -264,7 +268,6 @@ function onAddLocationSubmit() {
         //callback to refresh locations, background will pass back new list
 
         function(responseLocations) {
-            console.log(responseLocations);
             displayLocations(responseLocations.updatedLocations);
         }
     )
@@ -281,13 +284,7 @@ function escapeHtml(str) {
 // maybe pops up more info, maybe calc distances btwn 
 // every location and the selected one 
 
-//MAYBE add location?
-//MAYBE sets of locations?
-
-
 function removeMarker(marker) {
-    console.log(marker, markers, markers[marker])
-    console.log("del marker", marker);
     if (markers[marker]) {
         markers[marker].setMap(null);
         delete markers[marker]
@@ -309,17 +306,19 @@ function clearTable() {
 function removeTableLocation(location) {
     // remove all elements in table not in locationData
     l = document.getElementById(location);
-    console.log("removing in table", location)
-    console.log(l)
     if (l) {
         l.parentElement.remove();
     }
 }
 
+function updateTable() {
+    $("#locationTable").trigger("update");
+}
 
 function removeLocation(location) {
     removeTableLocation(location);
     removeMarker(location);
+    updateTable();
 
 }
 
@@ -330,8 +329,6 @@ function clearLocations() {
 
 function updateLocation(location) {
     //updates a location
-    console.log("UPDATING", location)
-
     removeTableLocation(Object.keys(location)[0]);
     removeMarker(Object.keys(location)[0]);
 
@@ -340,9 +337,6 @@ function updateLocation(location) {
 }
 
 function displayLocations(locationData) {
-    console.log("DISPLAYING LOCS")
-    //expecting a json object with structure:
-
     //filter out any duplicate locations
     for (loc in locationData) {
         if (loc in markers) {
@@ -352,17 +346,13 @@ function displayLocations(locationData) {
     addMarkersToMap(locationData);
     addLocationsToTable(locationData);
     setTbodyHeight();
+    updateTable();
 }
 
 var markers = {};
 
 // TODO: get original wiki link and display in a read more in infowindows
 
-
-
-//set size of tbody to 
-//$(document).height()*.80
-//on resize, recalculate and update.
 
 function setTbodyHeight() {
     $("tbody").height($(document).height() * .70);
@@ -372,20 +362,7 @@ function addMarkersToMap(locations) {
 
     var bounds = new google.maps.LatLngBounds()
 
-    //TODO: implement data checking to ensure that things are
-    // properly formatted/exist for each obj tried
-    console.log("add", markers)
     for (loc in locations) {
-        console.log(locations[loc]);
-        //TODO: Add clustering of markers
-
-
-        //OLD WAY
-        // var contentString = '<div class="infoWindowDiv"><div id="content">' + loc +
-        //     '</div>' + '<img src="' + locations[loc].imageUrl + '">' +
-        //     '<div id="locDescription"' + locations[loc].extract + '<div/></div>';
-
-        //NEW REDUCED INFO WAY
         var contentString = '<div class="gInfowindow"><h3 id="content">' + loc +
             '</h3>' + '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" id="readMoreModal">' + 'Summary' + '</button>' + '</div>'
 
@@ -400,7 +377,6 @@ function addMarkersToMap(locations) {
             title: loc
         });
 
-        //this is going to be hacky but whatever.
         marker.location = locations[loc];
 
         google.maps.event.addListener(marker, 'click',
@@ -412,7 +388,6 @@ function addMarkersToMap(locations) {
                     infowindow.open(map, marker);
                     lastInfowindow = infowindow;
                     openLocation = marker;
-                    console.log(marker.title);
                 };
             }(infowindow, marker)
         );
@@ -424,53 +399,24 @@ function addMarkersToMap(locations) {
 }
 
 function addLocationsToTable(locations) {
-    console.log("LOCTABLE", locations)
     locList = $("#locationTable");
     for (loc in locations) {
-        console.log("!!", 'id=' + loc);
         var contentString =
             '<tr id="locTr">' +
             '<td class="rowLocation" id="' + loc + '">' + loc + '</td>' +
-            "<td class='removeButton'><button class='deleteLoc' id='" + loc + "'>X</button></td>" +
-
-        //this was to add coords
-        // '<td>' + locations[loc].x + ' ' + locations[loc].y + '</td>' +
-        //instead, add the remove buttons
-        '</tr>'
+            "<td class='removeButton'><button class='deleteLoc' id='" + loc +
+            "'>X</button></td>" + '</tr>'
         locList.append(contentString);
     }
 
-    locList.tablecloth({
-        theme: "default",
-        bordered: true,
-        condensed: true,
-        striped: true,
-        sortable: true,
-        clean: true,
-        cleanElements: "th td",
-    });
+    //Update the table
+    locList.trigger("update");
+
+    //set listeners
     setRowListeners();
     setRemoveButtonListeners();
 }
 
-
-//get data and display
-getLocationData();
-
-
-// function removeLocation(location) {
-//     chrome.runtime.sendMessage({
-//             'action': 'remove_location',
-//             'removeLocation': location
-//         },
-//         //callback to refresh locations, background will pass back new list
-
-//         function(responseLocations) {
-//             console.log(responseLocations)
-//             refreshLocations(responseLocations.updatedLocations);
-//         }
-//     )
-// }
 
 //removes a location from the list and sends a message to the background to remove from real list
 
@@ -482,9 +428,7 @@ function removeLocationFromBackend(location) {
         //callback to refresh locations, background will pass back new list
 
         function(responseLocations) {
-            console.log(responseLocations);
             removeLocation(location);
-            // displayLocations(responseLocations.updatedLocations);
         }
     )
 }
@@ -492,12 +436,9 @@ function removeLocationFromBackend(location) {
 //Listener for new location data
 
 function onRequest(request, sender, sendResponse) {
-    console.log(request, sender.tab, request.action);
     if (request.action == "update_locations") {
-        console.log("UPDATING MAP")
         displayLocations(request.updatedLocations);
     } else if (request.action == "remove_location") {
-        console.log("remove", request.removeLocation)
         removeLocation(request.removeLocation);
     } else if (request.action == "clear_locations") {
         clearLocations();
