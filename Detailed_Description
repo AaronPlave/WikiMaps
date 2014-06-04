@@ -1,0 +1,28 @@
+WikiMaps lets you select locations from text on the web, displays them on a custom Google map, and pulls summaries of each item from Wikipedia. Feel free to add any location that can be found on Google Maps (and optionally on Wikipedia).
+
+How to Use:
+
+---Viewing the map--- 
+Click on the WikiMaps icon in the extensions icon toolbar in the upper right hand corner of the screen. Then click "Display Map"
+
+---Adding a location to WikiMaps---
+1. Highlight some text, right click, and select "Add to WikiMaps" in the menu.
+2. In the map page (after you click "Display Map") you can enter locations to add in the "Add Locations" area.
+
+---Removing locations---
+To remove a particular location, press the "x" button to the right of the location. To clear all locations, click the WikiMaps icon and then click "Clear List".
+
+---Viewing Wikipedia Summary---
+To view the Wikipedia summary, click on an item in the map view and then click on "Summary" in the information window that appears above the map marker.
+
+
+Other Features/Notes:
+-Locations are saved locally and will be reloaded in the event you close your browser.
+-You can sort the locations in the tables alphabetically by clicking on the "Location" label in the table.
+-If WikiMaps is unable to identify the location you attempted to add, the location will not be added.
+-Not all locations will have complete or any Wikipedia data.
+
+Future Improvements:
+-Improve geocoding by pulling new coordinates from Wikipedia if data is found on Wikipedia for a location.
+-Error handling if WikiMaps is unable to add a location.
+-Better responsiveness to different window sizes.  
