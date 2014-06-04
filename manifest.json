@@ -3,7 +3,7 @@
     "version": "0.1",
     "description": "Select locations on a page and display them on a map",
     "icons": {
-        "128": "img/icon.png"
+        "128": "img/icon2.png"
     },
     "commands": {
         "add_selection": {
