@@ -386,8 +386,8 @@ function addMarkersToMap(locations) {
         //     '<div id="locDescription"' + locations[loc].extract + '<div/></div>';
 
         //NEW REDUCED INFO WAY
-        var contentString = '<div class="gInfowindow"><h4 id="content">' + loc +
-            '</h4>' + '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" id="readMoreModal">' + 'Read more' + '</button>' + '</div>'
+        var contentString = '<div class="gInfowindow"><h3 id="content">' + loc +
+            '</h3>' + '<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" id="readMoreModal">' + 'Summary' + '</button>' + '</div>'
 
         var infowindow = new google.maps.InfoWindow({
             content: contentString,

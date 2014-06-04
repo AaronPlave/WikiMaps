@@ -9,7 +9,7 @@ function onMenuClick(info, tab) {
 }
 
 chrome.contextMenus.create({
-    "title": "Add to Map Select",
+    "title": "Add to WikiMaps",
     "contexts": ["selection"],
     "onclick": onMenuClick
 })
