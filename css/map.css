@@ -19,10 +19,76 @@ html, body, .row, .col-xs-9 {
     font-family: Copse-webfont;
 }
 body {
-	color: rgba(31, 32, 32, 0.91);
+    color: rgba(31, 32, 32, 0.91);
+}
+.well {
+    background-image: linear-gradient(to bottom, #e8e8e8 0%, #f5f5f5 0%)
+}
+.btn-primary {
+    color: #fff;
+    background-color: rgba(53, 126, 189, 0.91);
+    border: dashed rgba(15, 54, 112, 0.63);
+    padding: 2px 4px;
+    font-size: 14px;
+}
+.btn-primary:hover {
+    color: #fff;
+    background-color: #46bcec;
+    border: dashed rgba(15, 54, 112, 0.63);
+    /*#46bcec*/
+}
+.drop-shadow {
+    /* -webkit-box-shadow: 0 0 5px 2px rgba(0, 0, 0, .5); */
+    box-shadow: 0 0 8px 3px rgba(0, 0, 0, .5);
+    border-radius: 5px;
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-right: 1px;
+}
+#shadowContainer {
+    width: initial;
 }
 h1, h2, h3, h4 {
     font-family: Matiz-webfont;
+}
+hr {
+    -moz-border-bottom-colors: none;
+    -moz-border-image: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #EEEEEE -moz-use-text-color #FFFFFF;
+    border-style: dashed none;
+    border-width: 1px 0;
+    margin: 18px 0;
+}
+#wikiSource {
+    text-align: left;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    font-style: italic;
+}
+#addLocationDiv {
+    padding-bottom: 20px;
+    font-size: medium;
+    border-bottom: dashed;
+    color:rgba(53, 126, 189, 0.91);
+}
+#addLocationInput {
+    border-radius: 5px;
+    text-indent: 5px;
+    width: 68%;
+    color: rgba(31, 32, 32, 0.91);
+}
+#addLocationSubmit {
+    border-radius: 5px;
+    margin-left: 5px;
+    background: white;
+    color: rgba(53, 126, 189, 0.91);
+}
+#addLocationSubmit:hover {
+    background: rgba(53, 126, 189, 0.91);
+    color: white;
 }
 .col-xs-3 {
     padding-right: 0px;
@@ -34,10 +100,10 @@ h1, h2, h3, h4 {
     text-align: center;
 }
 #content {
-	text-align: left;
+    text-align: left;
 }
 .modal-title {
-	text-align: center;
+    text-align: center;
 }
 #locDescription {
     text-align: justify;
@@ -48,10 +114,13 @@ h1, h2, h3, h4 {
 }
 #tableCol {
     padding-left: 0px;
+    z-index: 1;
 }
-#headerRow {
+/*#46bcec*/
+ #headerRow {
     height:10%;
-    background: #46bcec;
+    background: rgba(53, 126, 189, 0.91);
+    ;
     border-bottom: dashed;
     border-right: dashed;
     border-width: 3px;
@@ -70,6 +139,8 @@ table {
 }
 thead, tbody, tr, td, th {
     display: block;
+    font-size: medium;
+    cursor: pointer;
 }
 tr:after {
     content:' ';
@@ -93,6 +164,12 @@ tbody td, thead th {
     /*width: 50%;*/
     float: left;
 }
+.table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th {
+    background-color: rgba(28, 108, 141, 0.08);
+}
+.table tbody tr:hover td, .table tbody tr:hover th {
+    background-color: rgba(53, 126, 189, 0.43)
+}
 #buttonDiv {
     padding-bottom: 12px;
 }
@@ -103,7 +180,7 @@ tbody td, thead th {
     border-radius: 50px;
     color: rgba(255, 0, 0, 0.71);
     line-height: inherit;
-    background: rgba(0, 0, 255, 0);
+    background: white;
 }
 .deleteLoc:hover {
     background: rgba(255, 0, 0, 0.71);
@@ -119,9 +196,13 @@ tbody td, thead th {
 }
 .locTh {
     width: 70% !important;
+    text-align: center !important;
+    padding-top: 14px !important;
 }
 .removeTh {
     width: 30% !important;
+    text-align: center !important;
+    padding-top: 14px !important;
 }
 #viewInGmaps {
     display: inline;
