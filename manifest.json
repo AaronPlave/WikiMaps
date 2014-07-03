@@ -1,6 +1,6 @@
 {
     "name": "WikiMaps",
-    "version": "1.1",
+    "version": "1.2",
     "description": "WikiMaps lets you select locations from text on the web, see them on a map, and view Wikipedia summaries for each one.",
     "icons": {
         "16": "img/16icon.png",
