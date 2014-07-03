@@ -68,10 +68,11 @@ function addLocation(location) {
 
 function updateLocation(location, coords) {
     //async attempt to get coordinates and update list
+    console.log(location,coords,"L AND C")
     if (coords) {
         locations[location] = {
-            x: coords.k,
-            y: coords.A
+            x: coords.lat(),
+            y: coords.lng()
         };
 
         //push locations out to whoever is listening-- i.e. 

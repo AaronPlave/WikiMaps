@@ -393,8 +393,11 @@ function addMarkersToMap(locations) {
         );
         markers[loc] = marker;
 
-        bounds.extend(coords);
-        map.fitBounds(bounds);
+        console.log(coords)
+        console.log(bounds)
+        console.log(locations)
+        // bounds.extend(coords);
+        // map.fitBounds(bounds);
     }
 }
 
